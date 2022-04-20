@@ -11,3 +11,126 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+body {
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+}
+
+.user-input {
+  display: flex;
+  flex-wrap: wrap;
+  width: 60%;
+}
+
+.user-input a {
+  vertical-align: super;
+}
+
+.user-input input {
+  background-color: #d3eaf2;
+  border: 1px solid #51abcb;
+  border-radius: 2px;
+  height: 1.5em;
+  width: 30%;
+  margin-right: .45em;
+}
+
+.user-input button {
+  background-color: #145369;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  height: 2em;
+  cursor: pointer;
+  box-shadow: 1px 1px;
+  margin-top: .5em;
+  margin-right: 1em;
+  margin-left: .2em;
+}
+
+.user-input button:hover {
+  background-color: #2596be;
+}
+
+.location {
+  justify-content: flex-start;
+  text-align: center;
+  font-size: 24px;
+  margin-top: 1.5em;
+}
+
+h3.location {
+  margin-bottom: 2em;
+}
+
+.forecast{
+  display: flex;
+  border: 2px #76442e;
+  border-radius: 4%;
+  margin-bottom: 20%;
+}
+
+.forecast span {
+  font-size: 24px;
+  color: #51abcb;
+}
+
+.weather-box{
+  width: 50%;
+  margin-right: 2em;
+}
+
+.weather-alerts {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  margin-top: 4em;
+  border: 2px solid black;
+  padding: 2em;
+  width: 70%;
+  color: rgb(206, 22, 22);
+}
+
+.future-forecast{
+  background-color: #51aacbb6;
+  margin-left: 2em;
+  width: 35%;
+  text-align: center;
+}
+
+.future-forecast h3 {
+  background-color: #d3eaf2;
+  padding: 2em;
+}
+
+.future-forecast p:nth-child(4), .future-forecast p:nth-child(7) {
+  border-bottom: 2px solid black;
+  padding-bottom: 1em;
+}
+
+.future-forecast span {
+  color: black;
+}
+
+footer {
+  align-self: flex-end;
+  display: flex;
+  justify-content: center;
+  margin-top: 5em;
+  margin-bottom: 0;
+  width: 100%;
+  height: 3em;
+  background-color: rgb(37, 150, 190);
+  font-size: 14px;
+  color: black;
+  
+}
+
+
+footer a {
+  color: navy;
+}

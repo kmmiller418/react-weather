@@ -18,21 +18,25 @@ const Button = (props) => {
 function App() {
   const [zipcode, setZipcode] = useState("");
   const [countryCode, setCountryCode] = useState("");
-  const [unit, setUnit] = useState("imperial");
+  const [unit, setUnit] = useState("F");
 
   const handleZip = (e) => {
     setZipcode(e.target.value);
-    console.log(zipcode);
   };
 
   const handleCountry = (e) => {
     setCountryCode(e.target.value);
-    console.log(countryCode);
   };
 
-  const handleUnit = () => {
-    unit === "imperial" ? setUnit("metric") : setUnit("imperial");
-    console.log(unit);
+  const handleSubmit = () => {
+    unit === "F" ? setUnit("C") : setUnit("F");
+
+    if (zipcode === "" || countryCode === "") {
+      alert("Please enter a location");
+      return null;
+    }
+
+    getWeather();
   };
 
   const getWeather = () => {
@@ -46,8 +50,10 @@ function App() {
         return { lat, lon, name };
       })
       .then((coordinates) => {
+        const system = unit === 'F' ? 'imperial' : 'metric';
+
         fetch(
-          `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&exclude=hourly&appid=1eba33578583cc2cb757872032783084&units=${unit}`
+          `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&exclude=hourly&appid=1eba33578583cc2cb757872032783084&units=${system}`
         )
           .then((response) => response.json())
           .then((json) => {
@@ -157,7 +163,6 @@ const post3DayForecast = (json, unit) => {
 
   return (
     <div className="App">
-      <h1>Weather App</h1>
       <h1>How's the Weather</h1>
       <div className="user-input">
         <Input placeholder={'Enter Zipcode'} onChange={handleZip}/>
@@ -170,8 +175,7 @@ const post3DayForecast = (json, unit) => {
         >
           ISO format
         </a>
-        <Button text={"Change unit to " + unit} onClick={handleUnit}/>
-        <Button text={"Get weather"} onClick={getWeather}/>
+        <Button text={"Get weather in °" + unit} onClick={handleSubmit}/>
       </div>
       <h3 className="location"></h3>
 
