@@ -1,44 +1,47 @@
 import React, { useState } from "react";
 
+const Input = (props) =>{
+  return (
+    <input
+      placeholder={props.placeholder}
+      type="text"
+      onChange={props.onChange}
+    />
+  );
+}
+
+const Button = (props) => {
+  const { onClick, text } = props;
+  return <button onClick={onClick}>{text}</button>;
+};
+
 function App() {
-  const [zipcode, setZipcode] = useState('');
-  const [countryCode, setCountryCode] = useState('');
-  const [unit, setUnit] = useState('imperial');
+  const [zipcode, setZipcode] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+  const [unit, setUnit] = useState("imperial");
 
   const handleZip = (e) => {
     setZipcode(e.target.value);
     console.log(zipcode);
-  } 
-  
+  };
+
   const handleCountry = (e) => {
     setCountryCode(e.target.value);
     console.log(countryCode);
-  }
+  };
 
   const handleUnit = () => {
-    unit === 'imperial' ? setUnit('metric') : setUnit('imperial');
+    unit === "imperial" ? setUnit("metric") : setUnit("imperial");
     console.log(unit);
-  }
+  };
 
   return (
     <div className="App">
       <h1>Weather App</h1>
       <h1>How's the Weather</h1>
       <div className="user-input">
-        <input
-          placeholder="enter zipcode"
-          id="zipcode"
-          name="zipcode"
-          type="text"
-          onChange={handleZip}
-        />
-        <input
-          placeholder="enter country code"
-          id="countryCode"
-          name="countryCode"
-          type="text"
-          onChange={handleCountry}
-        />
+        <Input placeholder={'Enter Zipcode'} onChange={handleZip}/>
+        <Input placeholder={'Enter ISO Country Code'} onChange={handleCountry}/>
         <a
           target="_blank"
           rel="noreferrer"
@@ -47,9 +50,7 @@ function App() {
         >
           ISO format
         </a>
-        <button value={unit} onClick={handleUnit}>
-          Get weather in {unit}
-        </button>
+        <Button text={"Get weather in " + unit} onClick={handleUnit}/>
       </div>
     </div>
   );
