@@ -1,19 +1,9 @@
 import React, { useState } from "react";
+import { Input, Button, Link } from "./Form"
 
-const Input = (props) =>{
-  return (
-    <input
-      placeholder={props.placeholder}
-      type="text"
-      onChange={props.onChange}
-    />
-  );
-}
+const key = '1eba33578583cc2cb757872032783084';
+console.log(process.env);
 
-const Button = (props) => {
-  const { onClick, text } = props;
-  return <button onClick={onClick}>{text}</button>;
-};
 
 function App() {
   const [zipcode, setZipcode] = useState("");
@@ -40,8 +30,9 @@ function App() {
   };
 
   const getWeather = () => {
+    console.log(process.env)
     fetch(
-      `https://api.openweathermap.org/geo/1.0/zip?zip=${zipcode},${countryCode}&appid=1eba33578583cc2cb757872032783084`
+      `https://api.openweathermap.org/geo/1.0/zip?zip=${zipcode},${countryCode}&appid=${key}`
     )
       .then((response) => response.json())
       .then((json) => {
@@ -53,7 +44,7 @@ function App() {
         const system = unit === 'F' ? 'imperial' : 'metric';
 
         fetch(
-          `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&exclude=hourly&appid=1eba33578583cc2cb757872032783084&units=${system}`
+          `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&exclude=hourly&appid=${key}&units=${system}`
         )
           .then((response) => response.json())
           .then((json) => {
@@ -167,18 +158,10 @@ const post3DayForecast = (json, unit) => {
       <div className="user-input">
         <Input placeholder={'Enter Zipcode'} onChange={handleZip}/>
         <Input placeholder={'Enter ISO Country Code'} onChange={handleCountry}/>
-        <a
-          target="_blank"
-          rel="noreferrer"
-          alt="ISO lookup"
-          href="https://www.iso.org/obp/ui/#search"
-        >
-          ISO format
-        </a>
+        <Link/>
         <Button text={"Get weather in °" + unit} onClick={handleSubmit}/>
       </div>
       <h3 className="location"></h3>
-
       <div className="forecast">
           <div className="weather-box">
           </div>
