@@ -1,23 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
 
 function App() {
+  const [zipcode, setZipcode] = useState('');
+  const [countryCode, setCountryCode] = useState('');
+  const [unit, setUnit] = useState('imperial');
+
+  const handleZip = (e) => {
+    setZipcode(e.target.value);
+    console.log(zipcode);
+  } 
+  
+  const handleCountry = (e) => {
+    setCountryCode(e.target.value);
+    console.log(countryCode);
+  }
+
+  const handleUnit = () => {
+    unit === 'imperial' ? setUnit('metric') : setUnit('imperial');
+    console.log(unit);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+      <h1>Weather App</h1>
+      <h1>How's the Weather</h1>
+      <div className="user-input">
+        <input
+          placeholder="enter zipcode"
+          id="zipcode"
+          name="zipcode"
+          type="text"
+          onChange={handleZip}
+        />
+        <input
+          placeholder="enter country code"
+          id="countryCode"
+          name="countryCode"
+          type="text"
+          onChange={handleCountry}
+        />
         <a
-          className="App-link"
-          href="https://reactjs.org"
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noreferrer"
+          alt="ISO lookup"
+          href="https://www.iso.org/obp/ui/#search"
         >
-          Learn React
+          ISO format
         </a>
-      </header>
+        <button value={unit} onClick={handleUnit}>
+          Get weather in {unit}
+        </button>
+      </div>
     </div>
   );
 }
