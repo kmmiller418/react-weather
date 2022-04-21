@@ -11,15 +11,6 @@ function App() {
   const [weather, setWeather] = useState({});
   const [date, setDate] = useState("");
 
-  if (weather.current) {
-    let temps = [
-      weather.current.temp,
-      weather.daily[0].temp.max,
-      weather.daily[0].temp.min,
-      weather.daily[0].feels_like.day,
-    ];
-  }
-
   const handleZip = (e) => {
     setZipcode(e.target.value);
   };
