@@ -1,14 +1,20 @@
 import React, { useState } from "react";
-import { Input, Button, Link } from "./Form"
-
-const key = '1eba33578583cc2cb757872032783084';
-console.log(process.env);
-
+import { Input, Button, Link } from "./Form";
 
 function App() {
   const [zipcode, setZipcode] = useState("");
   const [countryCode, setCountryCode] = useState("");
   const [unit, setUnit] = useState("F");
+  const [location, setLocation] = useState({});
+  const [weather, setWeather] = useState({});
+  const [date, setDate] = useState("");
+
+  if (weather.current) { let temps = [
+    weather.current.temp,
+    weather.daily[0].temp.max,
+    weather.daily[0].temp.min,
+    weather.daily[0].feels_like.day,
+  ]; }
 
   const handleZip = (e) => {
     setZipcode(e.target.value);
@@ -19,6 +25,9 @@ function App() {
   };
 
   const handleSubmit = () => {
+    let d = new Date();
+    setDate(d.toString());
+
     unit === "F" ? setUnit("C") : setUnit("F");
 
     if (zipcode === "" || countryCode === "") {
@@ -30,144 +39,126 @@ function App() {
   };
 
   const getWeather = () => {
-    console.log(process.env)
     fetch(
-      `https://api.openweathermap.org/geo/1.0/zip?zip=${zipcode},${countryCode}&appid=${key}`
+      `https://api.openweathermap.org/geo/1.0/zip?zip=${zipcode},${countryCode}&appid=${process.env.REACT_APP_API_KEY}`
     )
       .then((response) => response.json())
       .then((json) => {
         const { lat, lon, name } = json;
-        postLocation(json.name);
+        setLocation({ lat, lon, name });
         return { lat, lon, name };
       })
       .then((coordinates) => {
-        const system = unit === 'F' ? 'imperial' : 'metric';
-
+        const system = unit === "F" ? "imperial" : "metric";
         fetch(
-          `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&exclude=hourly&appid=${key}&units=${system}`
+          `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&exclude=hourly&appid=${process.env.REACT_APP_API_KEY}&units=${system}`
         )
           .then((response) => response.json())
           .then((json) => {
-            console.log(json);
-            postForecast(json, unit);
-            post3DayForecast(json, unit);
+            const { current, daily, alerts } = json;
+            setWeather({ current, daily, alerts });
+            // post3DayForecast(json, unit);
           });
       });
   };
 
-const postLocation = (city) => {
-  const location = document.querySelector(".location");
-  location.innerHTML = `Thanks for checking in from ${city}!`;
-};
+  const post3DayForecast = (json, unit) => {
+    const futureForecast = document.querySelector(".future-forecast");
+    futureForecast.innerHTML = `<h3>Your three day forecast</h3>`;
 
-const postForecast = (json, system) => {
-  const weatherBox = document.querySelector(".weather-box");
-  weatherBox.innerHTML = `<h3>Your forecast for today</h3>`;
+    for (let i = 1; i < 4; i++) {
+      let daily = json.daily[i];
+      let hiLo = document.createElement("p");
+      let condition = document.createElement("p");
+      let img = document.createElement("img");
 
-  const { current, daily, alerts } = json;
-  const temps = [
-    current.temp,
-    daily[0].temp.max,
-    daily[0].temp.min,
-    daily[0].feels_like.day,
-  ];
+      hiLo.innerHTML = `<span>${Math.round(
+        daily.temp.max
+      )} &#176${unit} / ${Math.round(daily.temp.min)} &#176${unit}</span>`;
+      condition.innerHTML = `The forecast calls for ${daily.weather[0].description}`;
+      img.src = `https://openweathermap.org/img/wn/${daily.weather[0].icon}@2x.png`;
+      futureForecast.append(img, hiLo, condition);
+    }
 
-  let currentDate = document.createElement("p");
-  let city = document.createElement("p");
-  let temp = document.createElement("P");
-  let currentConditions = document.createElement("p");
-  let tempHi = document.createElement("p");
-  let tempLo = document.createElement("p");
-  let feelsLike = document.createElement("p");
-  let humidity = document.createElement("p");
-  let windSpeed = document.createElement("p");
-
-  let weatherAlerts = document.createElement("div");
-  weatherAlerts.classList.add("weather-alerts");
-
-  currentDate.innerHTML = `Your weather report was generated on ${new Date()}`;
-  temp.innerHTML = `Current temperature: <span>${Math.round(
-    temps[0]
-  )} &#176${system}</span>`;
-  currentConditions.innerHTML = `Currently the forecast is: <span>${current.weather[0].main}, with ${current.weather[0].description}</span>`;
-  tempHi.innerHTML = `The high today is <span>${Math.round(
-    temps[1]
-  )} &#176${system}</span>`;
-  tempLo.innerHTML = `The low today is <span>${Math.round(
-    temps[2]
-  )} &#176${system}</span>`;
-  feelsLike.innerHTML = `During the day, it will feel around <span>${Math.round(
-    temps[3]
-  )} &#176${system}</span>`;
-  humidity.innerHTML = `The humidity today is <span>${current.humidity}%</span>`;
-  windSpeed.innerHTML = `The wind speed today is <span>${current.wind_speed} mph</span>`;
-
-  if (!alerts) {
-    weatherAlerts.innerHTML =
-      "<h2>No Weather Alerts Today! Have a good day!</h2>";
-  } else {
-    let senderName = document.createElement("h4");
-    let event = document.createElement("h4");
-    let description = document.createElement("p");
-
-    senderName.innerHTML = alerts.sender_name;
-    event.innerHTML = alerts.event;
-    description.innerHTML = alerts.description;
-
-    weatherAlerts.append(senderName, event, description);
-  }
-
-  weatherBox.append(
-    currentDate,
-    city,
-    temp,
-    tempHi,
-    tempLo,
-    feelsLike,
-    currentConditions,
-    humidity,
-    windSpeed,
-    weatherAlerts
-  );
-};
-
-const post3DayForecast = (json, unit) => {
-  const futureForecast = document.querySelector(".future-forecast");
-  futureForecast.innerHTML = `<h3>Your three day forecast</h3>`;
-
-  for (let i = 1; i < 4; i++) {
-    let daily = json.daily[i];
-    let hiLo = document.createElement("p");
-    let condition = document.createElement("p");
-    let img = document.createElement("img");
-
-    hiLo.innerHTML = `<span>${Math.round(
-      daily.temp.max
-    )} &#176${unit} / ${Math.round(daily.temp.min)} &#176${unit}</span>`;
-    condition.innerHTML = `The forecast calls for ${daily.weather[0].description}`;
-    img.src = `https://openweathermap.org/img/wn/${daily.weather[0].icon}@2x.png`;
-    futureForecast.append(img, hiLo, condition);
-  }
-
-  futureForecast.style.border = "2px solid black";
-};
+    futureForecast.style.border = "2px solid black";
+  };
 
   return (
     <div className="App">
       <h1>How's the Weather</h1>
       <div className="user-input">
-        <Input placeholder={'Enter Zipcode'} onChange={handleZip}/>
-        <Input placeholder={'Enter ISO Country Code'} onChange={handleCountry}/>
-        <Link/>
-        <Button text={"Get weather in °" + unit} onClick={handleSubmit}/>
+        <Input placeholder={"Enter Zipcode"} onChange={handleZip} />
+        <Input
+          placeholder={"Enter ISO Country Code"}
+          onChange={handleCountry}
+        />
+        <Link />
+        <Button text={"Get weather in °" + unit} onClick={handleSubmit} />
       </div>
-      <h3 className="location"></h3>
-      <div className="forecast">
+      {location.name && (
+        <h3 className="location">
+          Thanks for checking in from {location.name}!
+        </h3>
+      )}
+      {weather.current && (
+        <div className="forecast">
           <div className="weather-box">
+          <p>Your weather report was generated on {date}</p>
+            <p>
+              Current temperature:{" "}
+              <span>
+                {Math.round(weather.current.temp)} °{unit}
+              </span>
+            </p>
+            <p>
+              Currently the forecast is:{" "}
+              <span>
+                {weather.current.weather[0].main}, with{" "}
+                {weather.current.weather[0].description}
+              </span>
+            </p>
+            <p>
+              The high today is{" "}
+              <span>
+                {Math.round(weather.daily[0].temp.max)} °{unit}
+              </span>
+            </p>
+            <p>
+              The low today is{" "}
+              <span>
+                {Math.round(weather.daily[0].temp.min)} °{unit}
+              </span>
+            </p>
+            <p>
+              During the day, it will feel around{" "}
+              <span>
+                {Math.round(weather.daily[0].feels_like.day)} °{unit}
+              </span>
+            </p>
+            <p>
+              The humidity today is <span>{weather.current.humidity}%</span>
+            </p>
+            <p>
+              The wind speed today is{" "}
+              <span>{weather.current.wind_speed} mph</span>
+            </p>
+            <div className="weather-alerts">
+              {!weather.alerts ? (
+                <h2>No alerts today! Have a great day!</h2>
+              ) : (
+                <div>
+                  <p>{weather.alerts.sender_name}</p>
+                  <p>{weather.alerts.event}</p>
+                  <p>{weather.alerts.description}</p>
+                </div>
+              )}
+            </div>
           </div>
           <div className="future-forecast">
+
           </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
