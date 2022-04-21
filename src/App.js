@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import CurrentForecast  from "./CurrentForecast";
 import { Input, Button, Link } from "./Form";
+
 
 function App() {
   const [zipcode, setZipcode] = useState("");
@@ -9,12 +11,14 @@ function App() {
   const [weather, setWeather] = useState({});
   const [date, setDate] = useState("");
 
-  if (weather.current) { let temps = [
-    weather.current.temp,
-    weather.daily[0].temp.max,
-    weather.daily[0].temp.min,
-    weather.daily[0].feels_like.day,
-  ]; }
+  if (weather.current) {
+    let temps = [
+      weather.current.temp,
+      weather.daily[0].temp.max,
+      weather.daily[0].temp.min,
+      weather.daily[0].feels_like.day,
+    ];
+  }
 
   const handleZip = (e) => {
     setZipcode(e.target.value);
@@ -57,7 +61,7 @@ function App() {
           .then((json) => {
             const { current, daily, alerts } = json;
             setWeather({ current, daily, alerts });
-            // post3DayForecast(json, unit);
+            post3DayForecast(json, unit);
           });
       });
   };
@@ -100,65 +104,10 @@ function App() {
           Thanks for checking in from {location.name}!
         </h3>
       )}
-      {weather.current && (
-        <div className="forecast">
-          <div className="weather-box">
-          <p>Your weather report was generated on {date}</p>
-            <p>
-              Current temperature:{" "}
-              <span>
-                {Math.round(weather.current.temp)} °{unit}
-              </span>
-            </p>
-            <p>
-              Currently the forecast is:{" "}
-              <span>
-                {weather.current.weather[0].main}, with{" "}
-                {weather.current.weather[0].description}
-              </span>
-            </p>
-            <p>
-              The high today is{" "}
-              <span>
-                {Math.round(weather.daily[0].temp.max)} °{unit}
-              </span>
-            </p>
-            <p>
-              The low today is{" "}
-              <span>
-                {Math.round(weather.daily[0].temp.min)} °{unit}
-              </span>
-            </p>
-            <p>
-              During the day, it will feel around{" "}
-              <span>
-                {Math.round(weather.daily[0].feels_like.day)} °{unit}
-              </span>
-            </p>
-            <p>
-              The humidity today is <span>{weather.current.humidity}%</span>
-            </p>
-            <p>
-              The wind speed today is{" "}
-              <span>{weather.current.wind_speed} mph</span>
-            </p>
-            <div className="weather-alerts">
-              {!weather.alerts ? (
-                <h2>No alerts today! Have a great day!</h2>
-              ) : (
-                <div>
-                  <p>{weather.alerts.sender_name}</p>
-                  <p>{weather.alerts.event}</p>
-                  <p>{weather.alerts.description}</p>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="future-forecast">
-
-          </div>
-        </div>
-      )}
+      <div className="forecast">
+        {weather.current && <CurrentForecast weather={weather} date={date} unit={unit}/>}
+        <div className="future-forecast"></div>
+      </div>
     </div>
   );
 }
