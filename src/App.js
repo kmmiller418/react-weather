@@ -23,7 +23,7 @@ function App() {
     let d = new Date();
     setDate(d.toString());
 
-    unit === "F" ? setUnit("C") : setUnit("F");
+    unit === "F" ? setUnit("F") : setUnit("C");
 
     if (zipcode === "" || countryCode === "") {
       alert("Please enter a location");
